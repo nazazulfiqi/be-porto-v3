@@ -17,8 +17,8 @@ Welcome to the **Portfolio Backend API**! This project serves as the backend for
 
 ### 1️⃣ Clone the repository
 ```bash
-$ git clone https://github.com/yourusername/portfolio-backend.git
-$ cd portfolio-backend
+$ git clone https://github.com/nazazulfiqi/be-porto-v3.git
+$ cd be-porto-v3
 ```
 
 ### 2️⃣ Set up environment variables
