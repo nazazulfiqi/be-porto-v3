@@ -1,0 +1,30 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go build artifacts
+*.log
+*.test
+*.out
+*.a
+*.o
+
+# Dependencies (managed by Go modules)
+/vendor/
+
+# Environment variables
+.env
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Uploads (store outside version control)
+/uploads/
