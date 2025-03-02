@@ -7,13 +7,25 @@ import (
 
 	"be-porto-v3/models"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
-func ConnectDatabase() {
+// LoadEnv membaca file .env
+func LoadEnv() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found, using environment variables instead")
+	}
+}
+
+// ConnectDB membuat koneksi ke database dan mengembalikan *gorm.DB dan error
+func ConnectDB() (*gorm.DB, error) {
+	LoadEnv() // Panggil LoadEnv untuk membaca konfigurasi
+
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
@@ -25,15 +37,16 @@ func ConnectDatabase() {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		return nil, err
 	}
 
 	// AutoMigrate models
 	err = db.AutoMigrate(&models.Project{}, &models.User{})
 	if err != nil {
-		log.Fatal("Failed to migrate database:", err)
+		return nil, err
 	}
 
 	DB = db
 	log.Println("Database connected successfully!")
+	return DB, nil
 }

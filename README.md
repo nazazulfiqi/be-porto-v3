@@ -62,6 +62,7 @@ Server will start at: **http://localhost:8080** 🚀
 |--------|-------------|------------------|
 | GET    | `/projects`   | Get all projects |
 | GET    | `/projects/:id` | Get project by ID |
+| GET    | `/projects/filter?` | Get project with filter |
 | POST   | `/projects`   | Create new project |
 | PUT    | `/projects/:id` | Update project |
 | DELETE | `/projects/:id` | Delete project |

@@ -11,6 +11,7 @@ type ProjectService interface {
 	UpdateProject(*models.Project) error
 	DeleteProject(id string) error
 	GetProjectByID(id string) (*models.Project, error)
+	FilterProjects(title string, page, limit int) ([]models.Project, int, error)
 }
 
 type projectService struct {
@@ -27,6 +28,10 @@ func (s *projectService) GetProjects() ([]models.Project, error) {
 
 func (s *projectService) GetProjectByID(id string) (*models.Project, error) {
 	return s.projectRepo.GetProjectByID(id)
+}
+
+func (s *projectService) FilterProjects(title string, page, limit int) ([]models.Project, int, error) {
+	return s.projectRepo.FilterProjects(title, page, limit)
 }
 
 func (s *projectService) CreateProject(project *models.Project) error {

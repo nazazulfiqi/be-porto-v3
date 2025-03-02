@@ -34,6 +34,7 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 	projects.Use(middleware.AuthMiddleware()) // 🔥 Tambahkan middleware di sini
 	projects.GET("", projectController.GetProjects)
 	projects.GET("/:id", projectController.GetProjectByID)
+	projects.GET("/filter", projectController.FilterProjects)
 	projects.POST("", projectController.CreateProject)
 	projects.PUT("/:id", projectController.UpdateProject)
 	projects.DELETE("/:id", projectController.DeleteProject)
