@@ -206,11 +206,16 @@ func (ac *ArticleController) UpdateArticle(ctx *gin.Context) {
 func (ac *ArticleController) DeleteArticle(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
+
 		dto.ErrorResponse(ctx, http.StatusBadRequest, "Invalid ID")
 		return
 	}
 
 	if err := ac.service.DeleteArticle(uint(id)); err != nil {
+		if err.Error() == "article not found" {
+			dto.ErrorResponse(ctx, http.StatusNotFound, "Article not found")
+			return
+		}
 		dto.ErrorResponse(ctx, http.StatusInternalServerError, "Failed to delete article")
 		return
 	}

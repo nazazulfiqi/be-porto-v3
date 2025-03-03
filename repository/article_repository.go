@@ -116,7 +116,14 @@ func (r *articleRepository) UpdateArticle(article *models.Article) error {
 }
 
 func (r *articleRepository) DeleteArticle(id uint) error {
-	return r.db.Delete(&models.Article{}, id).Error
+	result := r.db.Delete(&models.Article{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("article not found")
+	}
+	return nil
 }
 
 func (r *articleRepository) IncrementViewCount(articleID uint) error {
