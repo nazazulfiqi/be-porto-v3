@@ -182,3 +182,25 @@ func (pc *ProjectController) DeleteProject(ctx *gin.Context) {
 
 	dto.SuccessResponse(ctx, http.StatusOK, "Project deleted successfully", nil)
 }
+
+func (ac *ArticleController) LikeArticle(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		dto.ErrorResponse(ctx, http.StatusBadRequest, "Invalid ID")
+		return
+	}
+
+	// Ambil userID dari JWT atau gunakan IP sebagai alternatif
+	userKey, exists := ctx.Get("userID") // Dari JWT token
+	if !exists {
+		userKey = ctx.ClientIP() // Gunakan IP jika tidak ada user login
+	}
+
+	err = ac.service.LikeArticle(userKey.(string), uint(id))
+	if err != nil {
+		dto.ErrorResponse(ctx, http.StatusTooManyRequests, err.Error()) // Jika spam, tampilkan error
+		return
+	}
+
+	dto.SuccessResponse(ctx, http.StatusOK, "Article liked successfully", nil)
+}

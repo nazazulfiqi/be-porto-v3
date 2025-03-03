@@ -49,6 +49,7 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 	articles.GET("/slug/:slug", articleController.GetArticleBySlug)
 	articles.GET("/filter", articleController.FilterArticles)
 	articles.POST("", articleController.CreateArticle)
+	articles.POST("/:id/like", articleController.LikeArticle)
 	articles.PUT("/:id", articleController.UpdateArticle)
 	articles.DELETE("/:id", articleController.DeleteArticle)
 }

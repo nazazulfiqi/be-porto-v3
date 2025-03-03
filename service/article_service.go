@@ -4,6 +4,8 @@ import (
 	"be-porto-v3/models"
 	"be-porto-v3/repository"
 	"errors"
+	"sync"
+	"time"
 )
 
 type ArticleService interface {
@@ -15,14 +17,20 @@ type ArticleService interface {
 	GetArticleBySlug(slug string) (*models.Article, error)
 	FilterArticles(title string, page, limit int) ([]models.Article, int, error)
 	IncrementViewCount(articleID uint)
+	LikeArticle(userKey string, articleID uint) error
 }
 
 type articleService struct {
 	articleRepo repository.ArticleRepository
+	likeCache   map[string]time.Time // Menyimpan IP/userID terakhir like
+	mu          sync.Mutex           // Mutex untuk menghindari race condition
 }
 
 func NewArticleService(articleRepo repository.ArticleRepository) ArticleService {
-	return &articleService{articleRepo: articleRepo}
+	return &articleService{
+		articleRepo: articleRepo,
+		likeCache:   make(map[string]time.Time),
+	}
 }
 
 func (s *articleService) GetAllArticles() ([]models.Article, error) {
@@ -63,4 +71,21 @@ func (s *articleService) DeleteArticle(id uint) error {
 
 func (s *articleService) IncrementViewCount(articleID uint) {
 	s.articleRepo.IncrementViewCount(articleID)
+}
+
+func (s *articleService) LikeArticle(userKey string, articleID uint) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// Cek apakah user baru saja like
+	lastLike, exists := s.likeCache[userKey]
+	if exists && time.Since(lastLike) < 5*time.Second {
+		return errors.New("please wait before liking again")
+	}
+
+	// Simpan waktu like terbaru
+	s.likeCache[userKey] = time.Now()
+
+	// Tambahkan counter like di database
+	return s.articleRepo.IncrementLike(articleID)
 }

@@ -67,7 +67,7 @@ Server will start at: **http://localhost:8080** 🚀
 | PUT    | `/projects/:id` | Update project |
 | DELETE | `/projects/:id` | Delete project |
 
-### 📂 Article Management
+### 📰 Article Management
 | Method | Endpoint      | Description       |
 |--------|-------------|------------------|
 | GET    | `/articles`   | Get all articles |

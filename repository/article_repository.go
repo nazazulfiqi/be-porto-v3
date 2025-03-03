@@ -18,6 +18,7 @@ type ArticleRepository interface {
 	GetArticleBySlug(slug string) (*models.Article, error)
 	FilterArticles(title string, page, limit int) ([]models.Article, int, error)
 	IncrementViewCount(articleID uint) error
+	IncrementLike(articleID uint) error
 }
 
 type articleRepository struct {
@@ -131,4 +132,10 @@ func (r *articleRepository) IncrementViewCount(articleID uint) error {
 		Where("id = ?", articleID).
 		UpdateColumn("view_count", gorm.Expr("view_count + ?", 1)).
 		Error
+}
+
+func (r *articleRepository) IncrementLike(articleID uint) error {
+	return r.db.Model(&models.Article{}).
+		Where("id = ?", articleID).
+		Update("likes", gorm.Expr("likes + 1")).Error
 }
