@@ -27,3 +27,23 @@ type User struct {
 	Email    string `gorm:"unique;not null" json:"email"`
 	Password string `gorm:"not null" json:"-"`
 }
+
+type Article struct {
+	ID             uint           `gorm:"primaryKey" json:"id"`
+	Title          string         `gorm:"not null" json:"title"`
+	Slug           string         `gorm:"unique;not null" json:"slug"`
+	Content        string         `gorm:"type:text;not null" json:"content"`
+	Excerpt        string         `gorm:"type:text" json:"excerpt"`
+	SEOTitle       string         `json:"seo_title"`
+	SEODescription string         `gorm:"type:text" json:"seo_description"`
+	CoverImage     string         `json:"cover_image"`
+	Tags           pq.StringArray `gorm:"type:text[]" json:"tags"`
+	Status         string         `gorm:"default:'draft'" json:"status"`
+	PublishedAt    *time.Time     `json:"published_at"`
+	AuthorID       uint           `json:"author_id"`
+	ViewCount      uint           `json:"view_count"`
+	Likes          uint           `json:"likes"`
+	CommentsCount  uint           `json:"comments_count"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+}

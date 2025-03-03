@@ -1,0 +1,25 @@
+# Root directory proyek
+root = "."
+
+# Folder sementara untuk build
+tmp_dir = "tmp"
+
+[build]
+  # Perintah build (gunakan path ke main.go di root)
+  cmd = "go build -o ./tmp/main.exe ./main.go"
+  # Binary yang akan dijalankan
+  bin = "tmp/main.exe"
+  # Delay setelah perubahan file (dalam milidetik)
+  delay = 1000
+  # Direktori yang tidak perlu dipantau
+  exclude_dir = ["tmp", "vendor"]
+  # Ekstensi file yang dipantau
+  include_ext = ["go", "html", "tpl", "tmpl"]
+  # File yang dikecualikan
+  exclude_regex = ["_test.go"]
+
+[log]
+  time = true
+
+[screen]
+  clear = true
