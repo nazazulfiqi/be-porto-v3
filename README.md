@@ -75,6 +75,7 @@ Server will start at: **http://localhost:8080** 🚀
 | GET    | `/articles/slug/:slug` | Get article by slug |
 | GET    | `/articles/filter?` | Get article with filter |
 | POST   | `/articles`   | Create new article |
+| POST   | `/articles/:id/like`   | Like article |
 | PUT    | `/articles/:id` | Update article |
 | DELETE | `/articles/:id` | Delete article |
 
