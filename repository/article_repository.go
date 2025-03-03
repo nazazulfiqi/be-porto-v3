@@ -2,7 +2,10 @@ package repository
 
 import (
 	"be-porto-v3/models"
+	"errors"
+	"fmt"
 
+	"github.com/gosimple/slug"
 	"gorm.io/gorm"
 )
 
@@ -75,11 +78,41 @@ func (r *articleRepository) GetArticleBySlug(slug string) (*models.Article, erro
 }
 
 func (r *articleRepository) CreateArticle(article *models.Article) error {
+	// Generate slug dari judul
+	article.Slug = slug.Make(article.Title)
+
+	// Pastikan slug unik
+	article.Slug = r.generateUniqueSlug(article.Slug)
+
+	// Insert ke database
 	return r.db.Create(article).Error
 }
 
+func (r *articleRepository) generateUniqueSlug(baseSlug string) string {
+	var count int
+	slugCandidate := baseSlug
+
+	for {
+		var existingArticle models.Article
+		err := r.db.Where("slug = ?", slugCandidate).First(&existingArticle).Error
+
+		// Jika tidak ada yang sama, gunakan slug ini
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			break
+		}
+
+		// Jika ada yang sama, tambahkan angka di belakang slug
+		count++
+		slugCandidate = fmt.Sprintf("%s-%d", baseSlug, count)
+	}
+
+	return slugCandidate
+}
+
 func (r *articleRepository) UpdateArticle(article *models.Article) error {
-	return r.db.Save(article).Error
+	return r.db.Model(&models.Article{}).
+		Where("id = ?", article.ID).
+		Updates(article).Error
 }
 
 func (r *articleRepository) DeleteArticle(id uint) error {

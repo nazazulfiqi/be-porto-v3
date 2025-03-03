@@ -148,19 +148,53 @@ func (ac *ArticleController) CreateArticle(ctx *gin.Context) {
 
 // Update Article
 func (ac *ArticleController) UpdateArticle(ctx *gin.Context) {
+	baseURL := os.Getenv("BASE_URL")
+
+	var article models.Article
+
+	// Ambil ID dari parameter URL
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		dto.ErrorResponse(ctx, http.StatusBadRequest, "Invalid ID")
+		dto.ErrorResponse(ctx, http.StatusBadRequest, "Invalid article ID")
+		return
+	}
+	article.ID = uint(id)
+
+	// Bind data dari form
+	article.Title = ctx.PostForm("title")
+	article.Content = ctx.PostForm("content")
+	article.Excerpt = ctx.PostForm("excerpt")
+	article.SEOTitle = ctx.PostForm("seo_title")
+	article.SEODescription = ctx.PostForm("seo_description")
+	article.Status = ctx.PostForm("status")
+
+	// Parse JSON array dari form-data untuk Tags
+	if err := json.Unmarshal([]byte(ctx.PostForm("tags")), &article.Tags); err != nil {
+		dto.ErrorResponse(ctx, http.StatusBadRequest, "Invalid tags format")
 		return
 	}
 
-	var updatedData models.Article
-	if err := ctx.ShouldBindJSON(&updatedData); err != nil {
-		dto.ErrorResponse(ctx, http.StatusBadRequest, "Invalid request payload")
-		return
+	// Handle upload gambar cover (opsional)
+	file, err := ctx.FormFile("cover_image")
+	if err == nil {
+		// Buat folder jika belum ada
+		uploadDir := "uploads/articles"
+		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+			os.MkdirAll(uploadDir, os.ModePerm)
+		}
+
+		// Simpan file
+		filePath := fmt.Sprintf("%s/%s", uploadDir, file.Filename)
+		ctx.SaveUploadedFile(file, filePath)
+		article.CoverImage = fmt.Sprintf("%s/%s", baseURL, filePath)
 	}
 
-	if err := ac.service.UpdateArticle(uint(id), &updatedData); err != nil {
+	// Update di database
+	if err := ac.service.UpdateArticle(&article); err != nil {
+		if err.Error() == "article not found" {
+			dto.ErrorResponse(ctx, http.StatusNotFound, "Article not found")
+			return
+		}
 		dto.ErrorResponse(ctx, http.StatusInternalServerError, "Failed to update article")
 		return
 	}

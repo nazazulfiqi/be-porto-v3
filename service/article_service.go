@@ -4,15 +4,13 @@ import (
 	"be-porto-v3/models"
 	"be-porto-v3/repository"
 	"errors"
-
-	"github.com/gosimple/slug"
 )
 
 type ArticleService interface {
 	GetAllArticles() ([]models.Article, error)
 	GetArticleByID(id uint) (*models.Article, error)
 	CreateArticle(article *models.Article) error
-	UpdateArticle(id uint, updatedData *models.Article) error
+	UpdateArticle(article *models.Article) error
 	DeleteArticle(id uint) error
 	GetArticleBySlug(slug string) (*models.Article, error)
 	FilterArticles(title string, page, limit int) ([]models.Article, int, error)
@@ -47,38 +45,14 @@ func (s *articleService) CreateArticle(article *models.Article) error {
 	return s.articleRepo.CreateArticle(article)
 }
 
-func (s *articleService) UpdateArticle(id uint, updatedData *models.Article) error {
-	article, err := s.articleRepo.GetArticleByID(id)
+func (s *articleService) UpdateArticle(article *models.Article) error {
+	existingArticle, err := s.articleRepo.GetArticleByID(article.ID)
 	if err != nil {
 		return errors.New("article not found")
 	}
 
-	// Update hanya jika data baru tidak kosong
-	if updatedData.Title != "" {
-		article.Title = updatedData.Title
-		article.Slug = slug.Make(updatedData.Title)
-	}
-	if updatedData.Content != "" {
-		article.Content = updatedData.Content
-	}
-	if updatedData.Excerpt != "" {
-		article.Excerpt = updatedData.Excerpt
-	}
-	if updatedData.SEOTitle != "" {
-		article.SEOTitle = updatedData.SEOTitle
-	}
-	if updatedData.SEODescription != "" {
-		article.SEODescription = updatedData.SEODescription
-	}
-	if updatedData.CoverImage != "" {
-		article.CoverImage = updatedData.CoverImage
-	}
-	if updatedData.Status != "" {
-		article.Status = updatedData.Status
-	}
-	if updatedData.PublishedAt != nil {
-		article.PublishedAt = updatedData.PublishedAt
-	}
+	// Pastikan slug tidak berubah
+	article.Slug = existingArticle.Slug
 
 	return s.articleRepo.UpdateArticle(article)
 }

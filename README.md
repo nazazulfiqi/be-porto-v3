@@ -67,6 +67,17 @@ Server will start at: **http://localhost:8080** 🚀
 | PUT    | `/projects/:id` | Update project |
 | DELETE | `/projects/:id` | Delete project |
 
+### 📂 Article Management
+| Method | Endpoint      | Description       |
+|--------|-------------|------------------|
+| GET    | `/articles`   | Get all articles |
+| GET    | `/articles/:id` | Get article by ID |
+| GET    | `/articles/slug/:slug` | Get article by slug |
+| GET    | `/articles/filter?` | Get article with filter |
+| POST   | `/articles`   | Create new article |
+| PUT    | `/articles/:id` | Update article |
+| DELETE | `/articles/:id` | Delete article |
+
 For **image uploads**, use `multipart/form-data` with `picture_cover` and `pictures[]` fields.
 
 ---
